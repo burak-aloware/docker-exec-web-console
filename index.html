@@ -45,10 +45,11 @@
   if (!command) {
     command = '/bin/bash';
   }
-  let protocol =  window.location.protocol === 'https:' ? 'wss' : 'ws';
+  console.log(command);
+  let protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
 
   let websocket = new WebSocket(
-      protocol
+      protocol + "://"
       + window.location.hostname + ":"
       + window.location.port
       + window.location.pathname
