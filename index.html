@@ -41,11 +41,6 @@
     containerId = prompt('Container ID');
   }
 
-  let command = getQueryVar('cmd');
-  if (!command) {
-    command = '/bin/bash';
-  }
-  console.log(command);
   let protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
 
   let websocket = new WebSocket(
@@ -54,13 +49,13 @@
       + window.location.port
       + window.location.pathname
       + "exec/"
-      + containerId + ',' + window.btoa(command)
+      + containerId
   );
 
   websocket.onopen = function () {
     let term = new Terminal({
-      //cols: 100,
-      //rows: 30,
+      cols: 100,
+      rows: 300,
       screenKeys: true,
       useStyle: true,
       cursorBlink: true,

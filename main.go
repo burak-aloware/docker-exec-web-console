@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"encoding/base64"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -23,6 +22,9 @@ var port = flag.String("port", "8888", "Port for server")
 var host = flag.String("host", "127.0.0.1:2735", "Docker host")
 
 var contextPath = "/"
+var dockerBashJson = bytes.NewBufferString("{\"AttachStdin\":true,\"AttachStdout\":true,\"AttachStderr\":true,\"Tty\":true,\"Cmd\":[\" /bin/bash \"]}")
+var unitTest = false
+var dockerUnitTestRunnerJson = bytes.NewBufferString("{\"AttachStdin\":true,\"AttachStdout\":true,\"AttachStderr\":true,\"Tty\":true,\"Cmd\":[\" /bin/bash \",\"-c\",\"APP_ENV=testing && /bin/bash init-db-testing.sh\"]}")
 
 func main() {
 	flag.Parse()
@@ -32,16 +34,22 @@ func main() {
 	}
 
 	http.Handle(contextPath+"/exec/", websocket.Handler(ExecContainer))
+
+	http.Handle(contextPath+"/run-unit-test/", websocket.Handler(ExecUnitTestOnContainer))
+
 	http.Handle(contextPath+"/", http.StripPrefix(contextPath+"/", http.FileServer(http.Dir("./"))))
 	if err := http.ListenAndServe(":"+*port, nil); err != nil {
 		panic(err)
 	}
 }
 
+func ExecUnitTestOnContainer(ws *websocket.Conn) {
+	unitTest = true
+	ExecContainer(ws)
+}
+
 func ExecContainer(ws *websocket.Conn) {
-	wsParams := strings.Split(ws.Request().URL.Path[len(contextPath+"/exec/"):], ",")
-	container := wsParams[0]
-	cmd, _ := base64.StdEncoding.DecodeString(wsParams[1])
+	container := ws.Request().URL.Path[len(contextPath+"/exec/"):]
 
 	if container == "" {
 		ws.Write([]byte("Container does not exist"))
@@ -51,7 +59,10 @@ func ExecContainer(ws *websocket.Conn) {
 		Id string
 	}
 	var s stuff
-	params := bytes.NewBufferString("{\"AttachStdin\":true,\"AttachStdout\":true,\"AttachStderr\":true,\"Tty\":true,\"Cmd\":[\"" + string(cmd) + "\"]}")
+	params := dockerBashJson
+	if unitTest == true {
+		params = dockerUnitTestRunnerJson
+	}
 	resp, err := http.Post("http://"+*host+"/containers/"+container+"/exec", "application/json", params)
 	if err != nil {
 		panic(err)
