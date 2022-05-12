@@ -39,7 +39,7 @@ func main() {
 
 func ExecContainer(ws *websocket.Conn) {
 	dockerBashJson := bytes.NewBufferString("{\"AttachStdin\":true,\"AttachStdout\":true,\"AttachStderr\":true,\"Tty\":true,\"Cmd\":[\"/bin/bash\"]}")
-	dockerUnitTestRunnerJson := bytes.NewBufferString("{\"AttachStdin\":true,\"AttachStdout\":true,\"AttachStderr\":true,\"Tty\":true,\"Cmd\":[\"/bin/bash\",\"-c\",\"APP_ENV=testing && /bin/bash init-db-testing.sh\"]}")
+	dockerUnitTestRunnerJson := bytes.NewBufferString("{\"AttachStdin\":true,\"AttachStdout\":true,\"AttachStderr\":true,\"Tty\":true,\"Cmd\":[\"/bin/bash\",\"-c\",\"APP_ENV=testing && /bin/bash /var/www/html/init-db-testing.sh\"]}")
 	wsParams := strings.Split(ws.Request().URL.Path[len(contextPath+"/exec/"):], ",")
 	container := wsParams[0]
 	action := wsParams[1]
