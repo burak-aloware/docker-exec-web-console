@@ -20,13 +20,11 @@ import (
 
 var port = flag.String("port", "8888", "Port for server")
 var host = flag.String("host", "127.0.0.1:2735", "Docker host")
-
-var contextPath = "/"
-var dockerBashJson = bytes.NewBufferString("{\"AttachStdin\":true,\"AttachStdout\":true,\"AttachStderr\":true,\"Tty\":true,\"Cmd\":[\"/bin/bash\"]}")
 var unitTest = false
-var dockerUnitTestRunnerJson = bytes.NewBufferString("{\"AttachStdin\":true,\"AttachStdout\":true,\"AttachStderr\":true,\"Tty\":true,\"Cmd\":[\"/bin/bash\",\"-c\",\"APP_ENV=testing && /bin/bash init-db-testing.sh\"]}")
+var contextPath = "/"
 
 func main() {
+
 	flag.Parse()
 
 	if cp := os.Getenv("CONTEXT_PATH"); cp != "" {
@@ -49,6 +47,9 @@ func ExecUnitTestOnContainer(ws *websocket.Conn) {
 }
 
 func ExecContainer(ws *websocket.Conn) {
+	dockerBashJson := bytes.NewBufferString("{\"AttachStdin\":true,\"AttachStdout\":true,\"AttachStderr\":true,\"Tty\":true,\"Cmd\":[\"/bin/bash\"]}")
+	dockerUnitTestRunnerJson := bytes.NewBufferString("{\"AttachStdin\":true,\"AttachStdout\":true,\"AttachStderr\":true,\"Tty\":true,\"Cmd\":[\"/bin/bash\",\"-c\",\"APP_ENV=testing && /bin/bash init-db-testing.sh\"]}")
+
 	container := ws.Request().URL.Path[len(contextPath+"/exec/"):]
 
 	if container == "" {
