@@ -22,9 +22,9 @@ var port = flag.String("port", "8888", "Port for server")
 var host = flag.String("host", "127.0.0.1:2735", "Docker host")
 
 var contextPath = "/"
-var dockerBashJson = bytes.NewBufferString("{\"AttachStdin\":true,\"AttachStdout\":true,\"AttachStderr\":true,\"Tty\":true,\"Cmd\":[\" /bin/bash \"]}")
+var dockerBashJson = bytes.NewBufferString("{\"AttachStdin\":true,\"AttachStdout\":true,\"AttachStderr\":true,\"Tty\":true,\"Cmd\":[\"/bin/bash\"]}")
 var unitTest = false
-var dockerUnitTestRunnerJson = bytes.NewBufferString("{\"AttachStdin\":true,\"AttachStdout\":true,\"AttachStderr\":true,\"Tty\":true,\"Cmd\":[\" /bin/bash \",\"-c\",\"APP_ENV=testing && /bin/bash init-db-testing.sh\"]}")
+var dockerUnitTestRunnerJson = bytes.NewBufferString("{\"AttachStdin\":true,\"AttachStdout\":true,\"AttachStderr\":true,\"Tty\":true,\"Cmd\":[\"/bin/bash\",\"-c\",\"APP_ENV=testing && /bin/bash init-db-testing.sh\"]}")
 
 func main() {
 	flag.Parse()
