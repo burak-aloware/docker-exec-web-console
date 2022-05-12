@@ -1,9 +1,16 @@
-FROM alpine:latest
-MAINTAINER Gennaro Vietri <gennaro.vietri@bitbull.it>
+FROM golang:1.16-alpine
 
-RUN apk --update add socat
+RUN apk --update add socat go
 
-ADD main /
+WORKDIR /app
+COPY go.mod ./
+COPY go.sum ./
+RUN go mod download
+
+COPY *.go ./
+
+RUN go build -o /main
+
 ADD index.html /
 ADD xterm /xterm
 
@@ -16,3 +23,4 @@ ENTRYPOINT ["/entrypoint.sh"]
 EXPOSE 8888
 
 CMD ["/main"]
+
