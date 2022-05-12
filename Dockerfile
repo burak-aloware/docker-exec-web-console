@@ -11,8 +11,8 @@ COPY main.go ./
 
 RUN go build -o /main
 
-ADD index.html /
-ADD xterm /xterm
+ADD index.html ./
+ADD xterm ./xterm
 
 COPY entrypoint.sh /entrypoint.sh
 
