@@ -1,13 +1,13 @@
 FROM golang:1.16-alpine
 
-RUN apk --update add socat go
+RUN apk --update add socat
 
 WORKDIR /app
 COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
 
-COPY *.go ./
+COPY main.go ./
 
 RUN go build -o /main
 
