@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
+	"golang.org/x/net/websocket"
 	"io"
 	"io/ioutil"
 	"net"
@@ -12,10 +14,6 @@ import (
 	"net/http/httputil"
 	"os"
 	"strings"
-	"time"
-
-	"github.com/davecgh/go-spew/spew"
-	"golang.org/x/net/websocket"
 )
 
 var port = flag.String("port", "8888", "Port for server")
@@ -25,6 +23,7 @@ var contextPath = "/"
 func main() {
 
 	flag.Parse()
+	fmt.Println("hey")
 
 	if cp := os.Getenv("CONTEXT_PATH"); cp != "" {
 		contextPath = strings.TrimRight(cp, "/")
@@ -94,7 +93,7 @@ func hijack(addr, method, path string, setRawTerminal bool, in io.ReadCloser, st
 	// ECONNTIMEOUT unless the socket connection truly is broken
 	if tcpConn, ok := dial.(*net.TCPConn); ok {
 		tcpConn.SetKeepAlive(true)
-		tcpConn.SetKeepAlivePeriod(30 * time.Second)
+		tcpConn.SetKeepAlivePeriod(600)
 	}
 	if err != nil {
 		return err
