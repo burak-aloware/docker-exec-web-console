@@ -69,5 +69,4 @@ jobs:
         run: |
           [ "$(docker ps -a | grep $branch_name)" ] && docker rm --force $(docker ps -aq --filter name=docker-exec-web-console)
           docker rmi -f $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker run --name docker-exec-web-console -d -p 9999:8888 -e "CONTEXT_PATH=/webconsole" -v /var/run/docker.sock:/var/run/docker.sock $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-    
+          docker run --name exc-docker-exec-web-console -h exc-docker-exec-web-console -d -p 9999:8888 -e "CONTEXT_PATH=/webconsole" -v /var/run/docker.sock:/var/run/docker.sock $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
