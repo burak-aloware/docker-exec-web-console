@@ -14,6 +14,7 @@ import (
 	"net/http/httputil"
 	"os"
 	"strings"
+	"time"
 )
 
 var port = flag.String("port", "8888", "Port for server")
@@ -93,7 +94,7 @@ func hijack(addr, method, path string, setRawTerminal bool, in io.ReadCloser, st
 	// ECONNTIMEOUT unless the socket connection truly is broken
 	if tcpConn, ok := dial.(*net.TCPConn); ok {
 		tcpConn.SetKeepAlive(true)
-		tcpConn.SetKeepAlivePeriod(600)
+		tcpConn.SetKeepAlivePeriod(30 * time.Second)
 	}
 	if err != nil {
 		return err
@@ -106,6 +107,7 @@ func hijack(addr, method, path string, setRawTerminal bool, in io.ReadCloser, st
 
 	rwc, br := clientconn.Hijack()
 	defer rwc.Close()
+	fmt.Println("hey")
 
 	if started != nil {
 		started <- rwc
