@@ -31,7 +31,7 @@ func main() {
 	}
 
 	http.Handle(contextPath+"/exec/", websocket.Handler(ExecContainer))
-	http.Handle(contextPath+"/", http.StripPrefix(contextPath+"/", http.FileServer(http.Dir("./"))))
+	http.Handle(contextPath+"/", http.StripPrefix(contextPath+"/", http.FileServer(http.Dir("/app/"))))
 	if err := http.ListenAndServe(":"+*port, nil); err != nil {
 		panic(err)
 	}
@@ -94,7 +94,7 @@ func hijack(addr, method, path string, setRawTerminal bool, in io.ReadCloser, st
 	// ECONNTIMEOUT unless the socket connection truly is broken
 	if tcpConn, ok := dial.(*net.TCPConn); ok {
 		tcpConn.SetKeepAlive(true)
-		tcpConn.SetKeepAlivePeriod(30 * time.Second)
+		tcpConn.SetKeepAlivePeriod(60 * time.Second)
 	}
 	if err != nil {
 		return err
@@ -107,7 +107,6 @@ func hijack(addr, method, path string, setRawTerminal bool, in io.ReadCloser, st
 
 	rwc, br := clientconn.Hijack()
 	defer rwc.Close()
-	fmt.Println("hey")
 
 	if started != nil {
 		started <- rwc
@@ -133,6 +132,7 @@ func hijack(addr, method, path string, setRawTerminal bool, in io.ReadCloser, st
 			CloseWrite() error
 		}); ok {
 			if err := conn.CloseWrite(); err != nil {
+				fmt.Println("connection closed")
 			}
 		}
 		return nil
