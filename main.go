@@ -76,6 +76,7 @@ func ExecContainer(ws *websocket.Conn) {
 func hijack(addr, method, path string, setRawTerminal bool, in io.ReadCloser, stdout, stderr io.Writer, started chan io.Closer, data interface{}) error {
 
 	params := bytes.NewBufferString("{\"Detach\": false, \"Tty\": true}")
+	closeParams := bytes.NewBufferString("{\"Detach\": true, \"Tty\": true}")
 	req, err := http.NewRequest(method, path, params)
 	if err != nil {
 		return err
@@ -94,7 +95,7 @@ func hijack(addr, method, path string, setRawTerminal bool, in io.ReadCloser, st
 	// ECONNTIMEOUT unless the socket connection truly is broken
 	if tcpConn, ok := dial.(*net.TCPConn); ok {
 		tcpConn.SetKeepAlive(true)
-		tcpConn.SetKeepAlivePeriod(60 * time.Second)
+		tcpConn.SetKeepAlivePeriod(30 * time.Second)
 	}
 	if err != nil {
 		return err
@@ -132,6 +133,7 @@ func hijack(addr, method, path string, setRawTerminal bool, in io.ReadCloser, st
 			CloseWrite() error
 		}); ok {
 			if err := conn.CloseWrite(); err != nil {
+				_, _ = http.NewRequest(method, path, closeParams)
 				fmt.Println("connection closed")
 			}
 		}
